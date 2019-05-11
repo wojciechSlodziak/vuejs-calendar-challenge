@@ -18,7 +18,9 @@
           :price-per-night="298"
           ppn-currency-representation="zł"
           :rating="4.5"
-          :numberOfVotes="123"
+          :number-of-votes="123"
+          :earliest-accommodation-date="earliestAccommodationDate"
+          :latest-accommodation-date="latestAccommodationDate"
         />
       </aside>
     </div>
@@ -38,9 +40,14 @@
 import AccommodationWidget from './components/AccommodationWidget.vue'
 
 export default {
-  name: 'App',
   components: {
     AccommodationWidget
+  },
+  data: function() {
+    return {
+      earliestAccommodationDate: new Date(2019, 4, 2),
+      latestAccommodationDate: new Date(2019, 5, 15)
+    }
   }
 }
 </script>

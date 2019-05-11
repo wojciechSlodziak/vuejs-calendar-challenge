@@ -1,17 +1,16 @@
 <template>
   <div class="star-rating">
-    <div class="star-rating_negative">
-      <span v-for="n in maxRating" :key="n">&#9734;</span>
+    <div class="star-rating__negative">
+      <span v-for="r in maxRating" :key="r">&#9734;</span>
     </div>
-    <div class="star-rating_positive" :style="{ width: percentageRating + '%' }">
-      <span v-for="n in maxRating" :key="n">&#9733;</span>
+    <div class="star-rating__positive" :style="{ width: percentageRating + '%' }">
+      <span v-for="r in maxRating" :key="r">&#9733;</span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'StarRating',
   props: {
     rating: {
       type: Number,
@@ -24,8 +23,8 @@ export default {
   },
   computed: {
     percentageRating() {
-      const percentageRating = this.rating / this.maxRating * 100;
-      return percentageRating >= 0? percentageRating : 0;
+      const percentageRating = this.rating / this.maxRating * 100
+      return percentageRating >= 0? percentageRating : 0
     }
   }
 }
@@ -36,7 +35,7 @@ export default {
   color: #378087;
   display: inline-block;
   position: relative;
-  .star-rating_positive {
+  .star-rating__positive {
     position: absolute;
     top: 0;
     left: 0;

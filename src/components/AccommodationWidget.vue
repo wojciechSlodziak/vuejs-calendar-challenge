@@ -6,18 +6,25 @@
         <span> per night</span>
       </div>
       <div>
-        <StarRating :rating="rating"/> {{ numberOfVotes }}
+        <StarRating :rating="4.5"/> {{ numberOfVotes }}
       </div>
     </header>
     <hr/>
+    <form action="javascript:void(0);">
+      <DateRangeInput
+        v-model="dateRangeValue"
+        :min-date="earliestAccommodationDatePastToday"
+        :max-date="latestAccommodationDate"
+      />
+    </form>
   </section>
 </template>
 
 <script>
 import StarRating from './StarRating.vue'
+import DateRangeInput from './DateRangeInput.vue'
 
 export default {
-  name: 'AccommodationWidget',
   props: {
     pricePerNight: {
       type: Number,
@@ -34,10 +41,35 @@ export default {
     numberOfVotes: {
       type: Number,
       required: true
+    },
+    earliestAccommodationDate: Date,
+    latestAccommodationDate: Date
+  },
+  data: function() {
+    return {
+      dateRangeValue: null
+    }
+  },
+  computed: {
+    earliestAccommodationDatePastToday() {
+      let now = new Date()
+      let today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      if (this.earliestAccommodationDate && this.earliestAccommodationDate >= today) {
+        return this.earliestAccommodationDate
+      } else {
+        return today
+      }
+    }
+  },
+  watch: {
+    // TODO: remove - this is only for presenting the functionality
+    dateRangeValue(newVal) {
+      console.log('Date range changed!', newVal.fromDate, newVal.toDate);
     }
   },
   components: {
-    StarRating
+    StarRating,
+    DateRangeInput
   }
 }
 </script>
