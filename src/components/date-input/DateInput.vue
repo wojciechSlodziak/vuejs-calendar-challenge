@@ -24,7 +24,12 @@
       @blur="handleCalendarBlur"
       :min-date="minDate"
       :max-date="maxDate"
-    />
+      :right-aligned="rightAligned"
+    >
+      <template v-slot:footer>
+        <slot name="calendar-footer"></slot>
+      </template>
+    </CalendarPopup>
   </div>
 </template>
 
@@ -40,7 +45,8 @@ export default {
       default: null
     },
     minDate: Date,
-    maxDate: Date
+    maxDate: Date,
+    rightAligned: Boolean
   },
   data() {
     const initialValue = this.value
@@ -132,5 +138,27 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import '../../styles/shared.less';
 
+.date-input {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+.date-input__input {
+  color: rgb(darken(@active-color, 45%));
+  padding: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid @border-color;
+  border-radius: 3px;
+  &:focus {
+    outline: none;
+    background-color: rgb(@active-color);
+    &::placeholder {
+      color: rgb(darken(@active-color, 45%));
+    }
+  }
+}
 </style>

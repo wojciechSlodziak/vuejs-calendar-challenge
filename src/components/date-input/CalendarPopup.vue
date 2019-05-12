@@ -1,7 +1,8 @@
 <template>
-  <div 
+  <section 
     ref="container"
     class="calendar-popup"
+    :class="{ 'calendar-popup--right-aligned': rightAligned }"
     v-if="isCalendarOpen"
   >
     <header class="calendar-popup__header">
@@ -9,24 +10,31 @@
         type="button"
         @click="showPrevMonth"
         @blur="handleFocusableElementBlur"
-        class="calendar-popup__month-button calendar-popup__month-button-prev">&#8592;</button>
-      {{ displayedMonthName }} {{ displayedYear }}
+        class="calendar-popup__month-button calendar-popup__month-button-prev"
+      >
+        <span>&#8592;</span>
+      </button>
+      <strong>{{ displayedMonthName }} {{ displayedYear }}</strong>
       <button 
         type="button"
         @click="showNextMonth" 
-        class="calendar-popup__month-button calendar-popup__month-button-next">&#8594;</button>
+        class="calendar-popup__month-button calendar-popup__month-button-next"
+      >
+        <span>&#8594;</span>
+      </button>
     </header>
 
     <section>
-      <ul>
+      <ul class="calendar-popup__column-headers">
         <li 
           v-for="(weekDay, weekDayIndex) in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" 
           :key="weekDayIndex"
+          class="calendar-popup__column-header"
         >
-          {{ weekDay }}
+          <strong>{{ weekDay }}</strong>
         </li>
       </ul>
-      <table>
+      <table class="calendar-popup__days-table">
         <tr v-for="(row, rowIndex) in calendarData" :key="rowIndex">
           <td
             ref="dayButton"
@@ -36,7 +44,9 @@
             :data-col-index="dayIndex"
             class="calendar-popup__day"
             :class="{ 'calendar-popup__day--selected': internalValue && day.date && day.date.getTime() === internalValue.getTime(),
-                      'calendar-popup__day--disabled': !day.isSelectable }"
+                      'calendar-popup__day--selectable': day.isSelectable && day.dayNumber,
+                      'calendar-popup__day--disabled': !day.isSelectable,
+                      'calendar-popup__day--dummy': !day.dayNumber }"
             @click="selectDate(day)"
             @keyup.enter="selectDate(day)"
             @keydown.up.down.left.right.prevent="handleKeyNavigation($event)"
@@ -49,7 +59,9 @@
         </tr>
       </table>
     </section>
-  </div>
+
+    <slot name="footer"></slot>
+  </section>
 </template>
 
 <script>
@@ -66,7 +78,8 @@ export default {
     isOpen: {
       type: Boolean,
       default: false
-    }
+    },
+    rightAligned: Boolean
   },
   data() {
     return {
@@ -261,27 +274,125 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import '../../styles/shared.less';
+
 .calendar-popup {
+  border-radius: 5px;
+  width: 236px;
+  box-shadow: 0px 0px 2px 0px @border-color;
   position: absolute;
   top: 100%;
+  left: 0;
   margin-top: 10px;
-  .calendar-popup__header {
-    position: relative;
-    text-align: center;
-    
-    .calendar-popup__month-button {
-      position: absolute;
-      top: 0;
-    }
-    .calendar-popup__month-button-prev {
-      left: 0;
-    }
-    .calendar-popup__month-button-next {
-      right: 0;
+  background: white;
+  z-index: 1;
+  border: 1px solid @border-color;
+  padding: 20px;
+  &.calendar-popup--right-aligned {
+    left: auto;
+    right: 0;
+    &:before, &:after {
+      left: auto;
+      right: 1.5rem;
+      top: -.5rem;
+      margin-right: -.5rem;
     }
   }
-  .calendar-popup__day--disabled {
-    opacity: 0.5;
+  &:before, &:after {
+    width: 1rem;
+    height: 1rem;
+    position: absolute;
+    transform: rotate(45deg);
+    content: "";
+    background-color: inherit;
+    left: 1.5rem;
+    top: -.5rem;
+    margin-left: -.5rem;
+  }
+  &:after {
+    box-shadow: -1px -1px 0 0 rgba(0,0,0,.16);
+    z-index: -1;
+  }
+}
+.calendar-popup__header {
+  color: @black;
+  position: relative;
+  text-align: center;
+  font-size: 1.1rem;
+  padding-top: 5px;
+}
+.calendar-popup__month-button {
+  position: absolute;
+  font-size: 22px;
+  line-height: 20px;
+  padding: 2px 8px;
+  top: 0;
+  border: 1px solid @border-color;
+  border-radius: 3px;
+  background-color: white;
+  color: @gray;
+  span {
+    position: relative;
+    display: inline-block;
+    top: -2px;
+  }
+  &:hover {
+    background-color: @active-color;
+    border-color: @active-color;
+    cursor: pointer;
+  }
+}
+.calendar-popup__month-button-prev {
+  left: 0;
+}
+.calendar-popup__month-button-next {
+  right: 0;
+}
+.calendar-popup__column-headers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+}
+.calendar-popup__column-header {
+  color: @gray;
+  font-size: 0.65rem;
+  display: inline-block;
+  width: 33px;
+  text-align: center;
+}
+.calendar-popup__days-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-top: 3px;
+}
+.calendar-popup__day {
+  font-size: 0.75rem;
+  color: @black;
+  width: 33px;
+  height: 33px;
+  box-sizing: border-box;
+  width: 33px;
+  margin: 0;
+  height: 33px;
+  padding: 0;
+  text-align: center;
+  &.calendar-popup__day--selectable {
+    cursor: pointer;
+    &:not(.calendar-popup__day--selected):hover {
+      background-color: rgb(lighten(@active-color, 10%));
+    }
+  }
+  &:not(.calendar-popup__day--dummy) {
+    border: 1px solid @border-color;
+  }
+  &.calendar-popup__day--disabled {
+    color: #dedede;
+    text-decoration: line-through;
+  }
+  &.calendar-popup__day--selected {
+    background-color: @active-color;
+    border-color: @active-color;
   }
 }
 </style>

@@ -29,7 +29,11 @@ and open <http://localhost:8080>
 
 ## Running tests
 
-TODO
+To run unit tests use:
+
+```
+yarn test:unit
+```
 
 ## Built With
 

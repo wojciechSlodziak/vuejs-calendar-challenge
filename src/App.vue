@@ -21,6 +21,7 @@
           :number-of-votes="123"
           :earliest-accommodation-date="earliestAccommodationDate"
           :latest-accommodation-date="latestAccommodationDate"
+          :days-from-last-update="23"
         />
       </aside>
     </div>

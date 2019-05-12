@@ -1,17 +1,36 @@
 <template>
-  <div>
+  <div class="date-range-input">
     <DateInput 
+      :id="fromInputId"
+      class="date-range-input__input"
+      placeholder="Check In"
       v-model="internalFromDate"
       :min-date="minDate"
       :max-date="fromInputMaxDate"
-      @input="handleInput"
-    />
+      @input="handleFromDateInput"
+    >
+      <template v-slot:calendar-footer>
+        <slot name="calendar-footer"></slot>
+      </template>
+    </DateInput>
+    <div class="date-range-input__separator">
+      <span>&#8594;</span>
+    </div>
     <DateInput
+      ref="toInput"
+      :id="toInputId"
+      class="date-range-input__input"
+      placeholder="Check Out"
       v-model="internalToDate"
       :min-date="toInputMinDate"
       :max-date="maxDate"
-      @input="handleInput"
-    />
+      @input="handleToDateInput"
+      :right-aligned="true"
+    >
+      <template v-slot:calendar-footer>
+        <slot name="calendar-footer"></slot>
+      </template>
+    </DateInput>
   </div>
 </template>
 
@@ -22,13 +41,17 @@ export default {
   props: {
     value: {
       type: Object,
-      default: {
-        fromDate: null,
-        toDate: null
+      default: function() {
+        return {
+          fromDate: null,
+          toDate: null
+        }
       }
     },
     minDate: Date,
     maxDate: Date,
+    fromInputId: String,
+    toInputId: String
   },
   data() {
     return {
@@ -61,6 +84,15 @@ export default {
     }
   },
   methods: {
+    handleFromDateInput() {
+      this.handleInput()
+      setTimeout(function() {
+        this.$refs.toInput.$refs.input.focus()
+      }.bind(this))
+    },
+    handleToDateInput() {
+      this.handleInput()
+    },
     handleInput() {
       this.$emit('input', {
         fromDate: this.internalFromDate,
@@ -75,5 +107,37 @@ export default {
 </script>
 
 <style scoped lang="less">
+@import '../styles/shared.less';
 
+.date-range-input {
+  display: flex;
+  padding: 7px;
+  border: 1px solid @border-color;
+  border-radius: 3px;
+}
+.date-range-input__separator {
+  padding: 0 8px;
+  max-height: 20px;
+  line-height: 20px;
+  span {
+    color: @medium-gray;
+    font-size: 1.8rem;
+  }
+}
+</style>
+<style lang="less">
+@import '../styles/shared.less';
+.date-range-input__input  {
+  .date-input__input {
+    border: none;
+    padding: 3px 5px;
+  }
+  .calendar-popup {
+    margin-top: 18px;
+    left: -7px;
+    &.calendar-popup--right-aligned {
+      right: -7px;
+    }
+  }
+}
 </style>
