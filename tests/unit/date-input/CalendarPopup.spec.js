@@ -73,4 +73,22 @@ describe('CalendarPopup.vue', () => {
   it('focuses correct day when right arrow key is pressed', done  => {
     testKeyboardInteraction('keydown.right', '24', done)
   })
+
+  it('selects date on enter', done  => {
+    cmp.vm.focusDayButton(3, 3)
+    setTimeout(function() {
+      createWrapper(document.activeElement).trigger('keyup.enter')
+      expect(cmp.vm.internalValue.getDate()).to.equal(23)
+      expect(cmp.vm.internalValue.getMonth()).to.equal(0)
+      expect(cmp.vm.internalValue.getFullYear()).to.equal(2019)
+      done()
+    }, 1)
+  })
+
+  it('selects date on click', ()  => {
+    cmp.find('[data-row-index="3"][data-col-index="3"]').trigger('click')
+    expect(cmp.vm.internalValue.getDate()).to.equal(23)
+    expect(cmp.vm.internalValue.getMonth()).to.equal(0)
+    expect(cmp.vm.internalValue.getFullYear()).to.equal(2019)
+  })
 })

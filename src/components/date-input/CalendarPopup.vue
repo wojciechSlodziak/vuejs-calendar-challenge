@@ -1,12 +1,14 @@
 <template>
   <section 
+    aria-label="Calendar"
     ref="container"
     class="calendar-popup"
     :class="{ 'calendar-popup--right-aligned': rightAligned }"
     v-if="isCalendarOpen"
   >
     <header class="calendar-popup__header">
-      <button 
+      <button
+        aria-label="Display previous month."
         type="button"
         @click="showPrevMonth"
         @blur="handleFocusableElementBlur"
@@ -16,6 +18,7 @@
       </button>
       <strong>{{ displayedMonthName }} {{ displayedYear }}</strong>
       <button 
+        aria-label="Display next month."
         type="button"
         @click="showNextMonth" 
         class="calendar-popup__month-button calendar-popup__month-button-next"
@@ -34,7 +37,7 @@
           <strong>{{ weekDay }}</strong>
         </li>
       </ul>
-      <table class="calendar-popup__days-table">
+      <table class="calendar-popup__days-table" role="presentation">
         <tr v-for="(row, rowIndex) in calendarData" :key="rowIndex">
           <td
             ref="dayButton"
@@ -42,6 +45,8 @@
             :key="dayIndex"
             :data-row-index="rowIndex"
             :data-col-index="dayIndex"
+            :aria-disabled="!day.isSelectable"
+            :aria-label="day.ariaLabel"
             class="calendar-popup__day"
             :class="{ 'calendar-popup__day--selected': internalValue && day.date && day.date.getTime() === internalValue.getTime(),
                       'calendar-popup__day--selectable': day.isSelectable && day.dayNumber,
@@ -115,6 +120,8 @@ export default {
             colIndex = 0
           }
 
+          let isSelectable = (!this.maxDate || date <= this.maxDate) 
+                              && (!this.minDate || date >= this.minDate)
           row.push({
             dayNumber,
             date,
@@ -122,8 +129,8 @@ export default {
             firstInRow: date.getDay() === 0 || dayNumber === 1,
             rowIndex,
             colIndex,
-            isSelectable: (!this.maxDate || date <= this.maxDate) 
-                          && (!this.minDate || date >= this.minDate)
+            isSelectable,
+            ariaLabel: (isSelectable? 'Date available, ' : 'Date not available, ') + date.toDateString()
           })
         }
         colIndex++
@@ -131,7 +138,7 @@ export default {
       data.push(row)
 
       return data
-    },
+    },  
     focusableDayButton() {
       if (this.keyboardFocusedDayButton) {
         return this.keyboardFocusedDayButton
@@ -166,7 +173,6 @@ export default {
   },
   methods: {
     handleCalendarOpen() {
-      this.applyPopupPositioning()
       this.setupInitialCalendarDisplay()
       this.isCalendarOpen = true
     },
@@ -265,9 +271,6 @@ export default {
         this.internalValue = day.date
         this.$emit('input', day.date)
       }
-    },
-    applyPopupPositioning() {
-      // TODO: handle directional opening & listen for scroll events & delete on destroy
     }
   }
 }
