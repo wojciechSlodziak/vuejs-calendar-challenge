@@ -6,7 +6,7 @@
         <span class="accommodation-widget__price-detail"> per night</span>
       </div>
       <div>
-        <StarRating :rating="4.5"/>
+        <StarRating :rating="rating"/>
         <span class="accommodation-widget__rating-count">{{ numberOfVotes }}</span>
       </div>
     </header>
@@ -69,7 +69,10 @@ export default {
   },
   data: function() {
     return {
-      dateRangeValue: null
+      dateRangeValue: {
+        fromDate: null,
+        toDate: null
+      }
     }
   },
   computed: {
@@ -85,8 +88,11 @@ export default {
   },
   watch: {
     // TODO: remove - this is only for presenting the functionality
-    dateRangeValue(newVal) {
-      console.log('Date range changed!', newVal.fromDate, newVal.toDate);
+    dateRangeValue: {
+      handler: function(newVal) {
+        console.log('Date range changed!', newVal.fromDate, newVal.toDate)
+      },
+      deep: true
     }
   },
   components: {

@@ -15,12 +15,12 @@
       @blur="handleInputBlur"
       @keyup.enter="openCalendarPopup"
     />
-    <CalendarPopup
+    <DateInputCalendarPopup
       ref="calendar"
       @mousedown.native.prevent
       :is-open="isPopupOpen"
       v-model="calendarPopupValue"
-      @input="handleCalendarDateSelect"
+      @input="handleCalendarPopupInput"
       @blur="handleCalendarBlur"
       :min-date="minDate"
       :max-date="maxDate"
@@ -29,12 +29,12 @@
       <template v-slot:footer>
         <slot name="calendar-footer"></slot>
       </template>
-    </CalendarPopup>
+    </DateInputCalendarPopup>
   </div>
 </template>
 
 <script>
-import CalendarPopup from './CalendarPopup.vue'
+import DateInputCalendarPopup from './DateInputCalendarPopup.vue'
 import { dateToString } from '../../utils/date-utils.js'
 
 export default {
@@ -65,10 +65,6 @@ export default {
     internalValue: function(newVal) {
       this.valueTextRepresentation = dateToString(newVal)
       this.calendarPopupValue = newVal
-    },
-    calendarPopupValue: function(newVal) {
-      this.internalValue = newVal
-      this.$emit('input', newVal)
     },
     minDate: function(newVal) {
       if (newVal && this.internalValue && this.internalValue < newVal) {
@@ -109,8 +105,6 @@ export default {
     handleInputFocus() {
       if (!this.ignoreNextFocus) {
         this.openCalendarPopup()
-      } else {
-        this.ignoreNextFocus = false
       }
     },
     handleInputBlur() {
@@ -120,9 +114,18 @@ export default {
         }
       })
     },
-    handleCalendarDateSelect() {
+    handleCalendarPopupInput(date) {
       this.closeCalendarPopup()
+      this.internalValue = date
+      this.$emit('input', date)
+
       this.ignoreNextFocus = true
+      this.focusInput()
+      setTimeout(function() {
+        this.ignoreNextFocus = false
+      }.bind(this));
+    },
+    focusInput() {
       this.$refs.input.focus()
     }
   },
@@ -132,7 +135,7 @@ export default {
     }
   },
   components: {
-    CalendarPopup
+    DateInputCalendarPopup
   }
 }
 </script>

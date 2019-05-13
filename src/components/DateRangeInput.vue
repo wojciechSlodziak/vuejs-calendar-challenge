@@ -61,7 +61,7 @@ export default {
   },
   computed: {
     fromInputMaxDate() {
-      let maxDate = this.internalToDate < this.maxDate? this.internalToDate : this.maxDate
+      let maxDate = this.internalToDate && this.internalToDate < this.maxDate? this.internalToDate : this.maxDate
       if (maxDate) {
         let dayBeforeMaxDate = (new Date(maxDate)).setDate(maxDate.getDate() - 1)
         return new Date(dayBeforeMaxDate)
@@ -69,7 +69,7 @@ export default {
       return null
     },
     toInputMinDate() {
-      let minDate = this.internalFromDate > this.minDate? this.internalFromDate : this.minDate
+      let minDate = this.internalFromDate && this.internalFromDate > this.minDate? this.internalFromDate : this.minDate
       if (minDate) {
         let dayAfterMinDate = (new Date(minDate)).setDate(minDate.getDate() + 1)
         return new Date(dayAfterMinDate)
@@ -78,16 +78,19 @@ export default {
     }
   },
   watch: {
-    value(newVal) {
-      this.internalFromDate = newVal.fromDate
-      this.internalToDate = newVal.toDate
+    value: {
+      handler: function(newVal) {
+        this.internalFromDate = newVal.fromDate
+        this.internalToDate = newVal.toDate
+      },
+      deep: true
     }
   },
   methods: {
     handleFromDateInput() {
       this.handleInput()
       setTimeout(function() {
-        this.$refs.toInput.$refs.input.focus()
+        this.$refs.toInput.focusInput()
       }.bind(this))
     },
     handleToDateInput() {
