@@ -223,7 +223,9 @@ export default {
         }
       }.bind(this)
 
-      switch (event.keyCode) {
+      const key = event.key || event.keyCode
+      switch (key) {
+        case 'ArrowLeft':
         case 37: //left
           if (currentDay.firstInRow) {
             this.showPrevMonth()
@@ -232,6 +234,7 @@ export default {
             nextColIndex--
           }
           break;
+        case 'ArrowRight':
         case 39: //right
           if (currentDay.lastInRow) {
             this.showNextMonth()
@@ -240,12 +243,14 @@ export default {
             nextColIndex++
           }
           break;
+        case 'ArrowUp':
         case 38: //up
           if (nextRowIndex > 0
               && this.calendarData[nextRowIndex - 1][colIndex].dayNumber) {
             nextRowIndex--
           }
           break;
+        case 'ArrowDown':
         case 40: //down
           if ((nextRowIndex + 1) < this.calendarData.length
               && this.calendarData[nextRowIndex + 1][colIndex].dayNumber) {
